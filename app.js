@@ -1,15 +1,14 @@
 $(document).ready(function(){
-
-  $('form').submit(function(e){
-    e.preventDefault()
-    e.target.remove()
-    var github_username = e.target.children[1].value
-    gitLastCommitTime(github_username, setTheClock)
-  })
-
-
+  $('form').submit(displayCountdownClock)
 })
 
+
+function displayCountdownClock(e){
+  e.preventDefault()
+  e.target.remove()
+  var github_username = e.target.children[1].value
+  gitLastCommitTime(github_username, setTheClock)
+}
 
 function gitLastCommitTime(username,callback){
   var base_url = "https://github.com/"+username+".json"
@@ -20,25 +19,29 @@ function gitLastCommitTime(username,callback){
   })
 }
 
-function setTheClock(response){
+function setTheClock(githubUserData){
+  var last_commit_time = Date.parse(githubUserData[0].created_at),
+      time_left = calculateTimeLeft(last_commit_time),
+      total_minutes = time_left/60,
+
+      hours = Math.floor(total_minutes/60),
+      minutes = Math.floor(total_minutes)%60,
+      seconds = time_left%60
+
+  startTheClock(hours,minutes,seconds)
+}
+
+function calculateTimeLeft(time_of_last_commit){
   var date_today = new Date(),
       start_of_day = Date.parse(date_today.toLocaleDateString()),
-      end_of_day = start_of_day + 86400000,
-      last_commit_time = Date.parse(response[0].created_at),
-      // time_since_last_commit = Date.now() - last_commit_time,
       milliseconds_past_today = date_today.valueOf() - start_of_day,
       milliseconds_left = 86400000 - milliseconds_past_today
 
-  if (last_commit_time >= start_of_day) {
+  if (time_of_last_commit >= start_of_day) {
     milliseconds_left += 86400000 // i.e. add a day
   }
 
-  var total_seconds = Math.round(milliseconds_left/1000),
-      hours = Math.floor(total_seconds/60/60),
-      minutes = Math.floor(total_seconds/60)%60,
-      seconds = Math.floor(total_seconds)%60
-  
-  startTheClock(hours,minutes,seconds)
+  return Math.round(milliseconds_left/1000)
 }
 
 function startTheClock(hours,minutes,seconds){
