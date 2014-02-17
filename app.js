@@ -7,10 +7,10 @@ function displayCountdownClock(e){
   e.preventDefault()
   e.target.remove()
   var github_username = e.target.children[1].value
-  gitLastCommitTime(github_username, setTheClock)
+  getUserData(github_username, setTheClock)
 }
 
-function gitLastCommitTime(username,callback){
+function getUserData(username,callback){
   var base_url = "https://github.com/"+username+".json"
   $.ajax({
     url: base_url,
@@ -20,7 +20,7 @@ function gitLastCommitTime(username,callback){
 }
 
 function setTheClock(githubUserData){
-  var last_commit_time = Date.parse(githubUserData[0].created_at),
+  var last_commit_time = find_last_commit_time(githubUserData),
       time_left = calculateTimeLeft(last_commit_time),
       total_minutes = time_left/60,
 
@@ -29,6 +29,14 @@ function setTheClock(githubUserData){
       seconds = time_left%60
 
   startTheClock(hours,minutes,seconds)
+}
+
+function find_last_commit_time(githubUserData){
+  githubUserData.forEach(function(item,i){
+    if (item.type == "PushEvent"){ // What else counts as a commit?
+      return Date.parse(item.created_at)
+    }
+  })
 }
 
 function calculateTimeLeft(time_of_last_commit){
