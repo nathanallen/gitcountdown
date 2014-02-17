@@ -1,13 +1,14 @@
 $(document).ready(function(){
-  $('form').submit(displayCountdownClock)
+  calculateTimeLeft(setTheClock)
+  $('form').submit(displayUserCountdown)
 })
 
-function displayCountdownClock(e){
+function displayUserCountdown(e){
   e.preventDefault()
   e.target.remove()
   var github_username = e.target.children[1].value
   getLastCommitDate(github_username, function(last_commit_date){
-    calculateTimeLeft(last_commit_date, setTheClock)
+    calculateTimeLeft(setTheClock,last_commit_date)
   })
 }
 
@@ -32,14 +33,16 @@ function findLastCommitDate(data,callback){
   }
 }
 
-function calculateTimeLeft(last_commit_date,callback){
+
+function calculateTimeLeft(callback,last_commit_date){
   var date_today = new Date(),
       start_of_day = Date.parse(date_today.toLocaleDateString()),
       milliseconds_past_today = date_today.valueOf() - start_of_day,
       milliseconds_left = 86400000 - milliseconds_past_today
 
-  if (last_commit_date >= start_of_day) {
+  if (last_commit_date && (last_commit_date >= start_of_day)) {
     milliseconds_left += 86400000 // i.e. add a day
+    $('.prompt').html("You're in the clear!")
   }
     
   callback(milliseconds_left)
@@ -54,8 +57,11 @@ function setTheClock(time_left){
   startTheClock(hours,minutes,seconds)
 }
 
+var interval;
+
 function startTheClock(hours,minutes,seconds){
-  setInterval(function(){
+  clearInterval(interval)
+  interval = setInterval(function(){
     var display = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds
     
     $('.countdown').html(display)
