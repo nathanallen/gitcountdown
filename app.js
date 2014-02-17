@@ -2,54 +2,56 @@ $(document).ready(function(){
   $('form').submit(displayCountdownClock)
 })
 
-
 function displayCountdownClock(e){
   e.preventDefault()
   e.target.remove()
   var github_username = e.target.children[1].value
-  getUserData(github_username, setTheClock)
+  getLastCommitDate(github_username, function(last_commit_date){
+    calculateTimeLeft(last_commit_date, setTheClock)
+  })
 }
 
-function getUserData(username,callback){
+function getLastCommitDate(username,callback){
   var base_url = "https://github.com/"+username+".json"
   $.ajax({
     url: base_url,
     dataType: 'jsonp',
-    success: callback
-  })
-}
-
-function setTheClock(githubUserData){
-  var last_commit_time = find_last_commit_time(githubUserData),
-      time_left = calculateTimeLeft(last_commit_time),
-      total_minutes = time_left/60,
-
-      hours = Math.floor(total_minutes/60),
-      minutes = Math.floor(total_minutes)%60,
-      seconds = time_left%60
-
-  startTheClock(hours,minutes,seconds)
-}
-
-function find_last_commit_time(githubUserData){
-  githubUserData.forEach(function(item,i){
-    if (item.type == "PushEvent"){ // What else counts as a commit?
-      return Date.parse(item.created_at)
+    success: function(data){
+      findLastCommitDate(data,callback)
     }
-  })
+  })  
 }
 
-function calculateTimeLeft(time_of_last_commit){
+function findLastCommitDate(data,callback){
+  var max = data.length
+  for (var i=0; i<max; i++){
+    if (data[i].type == "PushEvent"){ // What else counts as a commit?
+      var date = Date.parse(data[i].created_at)
+      return callback(date)
+    }
+  }
+}
+
+function calculateTimeLeft(last_commit_date,callback){
   var date_today = new Date(),
       start_of_day = Date.parse(date_today.toLocaleDateString()),
       milliseconds_past_today = date_today.valueOf() - start_of_day,
       milliseconds_left = 86400000 - milliseconds_past_today
 
-  if (time_of_last_commit >= start_of_day) {
+  if (last_commit_date >= start_of_day) {
     milliseconds_left += 86400000 // i.e. add a day
   }
+    
+  callback(milliseconds_left)
+}
 
-  return Math.round(milliseconds_left/1000)
+function setTheClock(time_left){
+  var total_minutes = Math.round(time_left/1000/60),
+      hours = Math.floor(total_minutes/60),
+      minutes = Math.floor(total_minutes)%60,
+      seconds = time_left%60
+
+  startTheClock(hours,minutes,seconds)
 }
 
 function startTheClock(hours,minutes,seconds){
