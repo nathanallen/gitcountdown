@@ -61,11 +61,13 @@ var interval;
 
 function startTheClock(hours,minutes,seconds){
   clearInterval(interval)
+  setTextColor(hours)
+
   interval = setInterval(function(){
     var display = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds
     
     $('.countdown').html(display)
-    
+
     if (seconds == 0){
       if (minutes == 0){
         if (hours == 0){
@@ -74,6 +76,7 @@ function startTheClock(hours,minutes,seconds){
           hours--
           minutes = 59
           seconds = 59
+          setTextColor(hours)
         }
       } else {
         minutes--
@@ -84,6 +87,29 @@ function startTheClock(hours,minutes,seconds){
     }
 
   },1000)
+}
+
+function setTextColor(hours){
+  var text_color;
+
+  switch (true){
+    case (hours < 3):
+      text_color = 'red'
+      break;
+    case (hours < 6):
+      text_color = 'orange'
+      break;
+    case (hours < 12):
+      text_color = 'gold'
+      break;
+    case (hours < 24):
+      text_color = 'yellowgreen'
+      break;
+    default:
+      text_color = 'green'
+  }
+
+  $('.countdown').css('color',text_color)
 }
 
 // var base_url = "https://github.com/users/"+username+"/contributions_calendar_data"
