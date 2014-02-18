@@ -113,7 +113,7 @@ function setTextColor(hours){
       text_color = 'green'
   }
 
-  $('.countdown').css('color',text_color)
+  $('.countdown_section').css('color',text_color)
 }
 
 // var base_url = "https://github.com/users/"+username+"/contributions_calendar_data"

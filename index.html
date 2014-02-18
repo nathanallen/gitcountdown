@@ -9,27 +9,32 @@
 </head>
 
 <body>
-  <h1 class='prompt'>Make today count!</h1>
-  <h2>You have...</h2>
-<!--   <span class='countdown'></span>  -->
-  <span class='countdown_row'>
-    <span class='h'>
-      <span class='amount'></span><br>Hours
+  <div class='content'>
+
+  <h2 class='prompt'>Make today count!</h2>
+
+  <div class='section-divider'></div>
+  <div class='countdown_row'>
+    <span class='countdown_section'>
+      <span class='h countdown_amount'></span><br>Hours
     </span>
-    <span class='m'>
-      <span class='amount'></span><br>Minutes
+    <span class='countdown_section'>
+      <span class='m countdown_amount'></span><br>Minutes
     </span>
-    <span class='s'>
-      <span class='amount'></span><br>Seconds
+    <span class='countdown_section'>
+      <span class='s countdown_amount'></span><br>Seconds
     </span>
   </span>
-
-  <h2>to commit.</h2>
+  </div>
+  <div class='section-divider'></div>
 
   <form>
    Github username:<br> <input type='text'></input>
     <input type='submit' value='Go!'></input>
   </form>
+
+  </div>
+
 
 <!--vendor-->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
