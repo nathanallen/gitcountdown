@@ -64,9 +64,13 @@ function startTheClock(hours,minutes,seconds){
   setTextColor(hours)
 
   interval = setInterval(function(){
-    var display = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+    var h = hours,
+        m = (minutes < 10 ? "0" : "") + minutes,
+        s = (seconds < 10 ? "0" : "") + seconds
     
-    $('.countdown').html(display)
+    $('.h').html(h)
+    $('.m').html(m)
+    $('.s').html(s)
 
     if (seconds == 0){
       if (minutes == 0){
