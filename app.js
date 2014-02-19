@@ -33,15 +33,19 @@ function findLastCommitDate(data,callback){
   }
 }
 
-
 function calculateTimeLeft(callback,last_commit_date){
-  var date_today = new Date(),
-      start_of_day = Date.parse(date_today.toLocaleDateString()),
-      milliseconds_past_today = date_today.valueOf() - start_of_day,
-      milliseconds_left = 86400000 - milliseconds_past_today
+  var day_in_ms = 86400000,
+      date_today = new Date(),
+      pst_timezone_offset = 480, //PST is utc -8. (Ignoring Daylight Savings).
+      current_timezone_offset = date_today.getTimezoneOffset(),
+      timezone_offset_difference_ms = (current_timezone_offset - pst_timezone_offset)*60*1000
+      start_of_day_utc = Date.parse(date_today.toLocaleDateString())
+      milliseconds_past_today = date_today.valueOf() - start_of_day_utc,
+      milliseconds_past_in_pst = milliseconds_past_today + timezone_offset_difference_ms
+      milliseconds_left = (day_in_ms - milliseconds_past_in_pst)%day_in_ms
 
-  if (last_commit_date && (last_commit_date >= start_of_day)) {
-    milliseconds_left += 86400000 // i.e. add a day
+  if (last_commit_date && (last_commit_date >= start_of_day_utc)) {
+    milliseconds_left += day_in_ms // i.e. add a day
     $('.prompt').html("You're in the clear!")
   }
     
